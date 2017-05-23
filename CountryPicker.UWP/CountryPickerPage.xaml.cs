@@ -1,18 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
+﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using CountryPicker.UWP.Class.Context;
 using CountryPicker.UWP.Class.Models;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -24,27 +12,78 @@ namespace CountryPicker.UWP
     /// </summary>
     public sealed partial class CountryPickerPage : Page
     {
+        public  delegate void SelectedCountryEventHandler(object sender, CountryModel selected);
+
+        public static event SelectedCountryEventHandler SelectedCountry;
+
         public CountryPickerPage()
         {
             this.InitializeComponent();
-
-            CountryVM.Source = CountryModel.GetCountries();
-            CountryListView.SelectionChanged+=CountryListViewOnSelectionChanged;
         }
 
-        private void CountryListViewOnSelectionChanged(object sender, SelectionChangedEventArgs selectionChangedEventArgs)
+        public CountryPickerPage(string countryName)
         {
+            this.InitializeComponent();
+
+            CountryName = countryName;
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            if (e.Parameter != null)
+            {
+                if (e.Parameter is string)
+                {
+                    CountryName = e.Parameter.ToString();
+                }
+            }
+        }
+
+        private string _countryName;
+
+        public string CountryName
+        {
+            get => _countryName;
+            set
+            {
+                _countryName = value;
+                LoadData(_countryName);
+            }
+        }
+
+        private void LoadData(string countryName = "")
+        {
+            CountryVM.Source = CountryModel.GetCountries();
+
+            Loaded += OnLoaded;
+            CountryListView.ItemClick += CountryListViewOnItemClick;
+            CountryListView.IsItemClickEnabled = true;
+
+            _countryName = countryName;
+        }
+
+
+        private void CountryListViewOnItemClick(object sender, ItemClickEventArgs itemClickEventArgs)
+        {
+            //if (CountryListView.SelectedIndex != -1)
+            {
+                var model = itemClickEventArgs.ClickedItem as CountryModel;
+                if (SelectedCountry != null)
+                    SelectedCountry.Invoke(CountryListView, model);
+            }
             
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        {
+            CountryListView.SelectedIndex = CountryModel.GetCountryModelIndex(_countryName);
+            CountryListView.ScrollIntoView(CountryListView.SelectedItem);
         }
 
         private void SearchBox_OnQueryChanged(SearchBox sender, SearchBoxQueryChangedEventArgs args)
         {
             CountryVM.Source = CountryModel.GetCountries(args.QueryText);
-        }
-
-        private void SearchBox_OnQuerySubmitted(SearchBox sender, SearchBoxQuerySubmittedEventArgs args)
-        {
-            
         }
     }
 }

@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 
 namespace CountryPicker.UWP.Class.Models
 {
-    class CountryModel : INotifyPropertyChanged
+    public class CountryModel : INotifyPropertyChanged
     {
         #region Properties
 
@@ -44,7 +44,7 @@ namespace CountryPicker.UWP.Class.Models
             set
             {
                 _id = value;
-
+                this.Flag = String.Format("Assets/CountriesFlag/{0}.png", _id);
                 OnPropertyChanged();
             }
         }
@@ -88,9 +88,9 @@ namespace CountryPicker.UWP.Class.Models
             }
         }
 
-        private Visibility _selected;
+        private Visibility _selected = Visibility.Collapsed;
 
-        public Visibility Selected
+        public Visibility Selected 
         {
             get => _selected;
             set => _selected = value;
@@ -109,44 +109,22 @@ namespace CountryPicker.UWP.Class.Models
             this.Flag = String.Format("Assets/CountriesFlag/{0}.png", id);
         }
 
+        public CountryModel()
+        {
+
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public static ObservableCollection<GroupInfoList> GetCountries()
         {
-            var json = LoadCountriesJsonFile();
-
-            var countriesCollection =
-                JsonConvert.DeserializeObject<List<CountryModel>>(json);
-
-            var col = new ObservableCollection<CountryModel>(countriesCollection);
-
-            ObservableCollection<GroupInfoList> groups = new ObservableCollection<GroupInfoList>();
-
-            var query = from item in col
-                group item by item.Group into g
-                orderby g.Key
-                select new { GroupName = g.Key, Items = g };
-
-            foreach (var g in query)
-            {
-                GroupInfoList info = new GroupInfoList();
-                info.Key = g.GroupName;
-                foreach (var item in g.Items)
-                {
-                    info.Add(item);
-                }
-                groups.Add(info);
-            }
-
-            groups.Move(groups.Count - 1, 0);
-
-            return groups;
+            return GetCountries("");
         }
 
         public static ObservableCollection<GroupInfoList> GetCountries(string countryName)
@@ -156,7 +134,7 @@ namespace CountryPicker.UWP.Class.Models
             var countriesCollection =
                 JsonConvert.DeserializeObject<List<CountryModel>>(json);
 
-            var col = new ObservableCollection<CountryModel>(countriesCollection.Where(x => x.Name.Contains(countryName)));
+            var col = new ObservableCollection<CountryModel>(countriesCollection.Where(x => x.Name.ToLower().Contains(countryName.ToLower())));
 
             ObservableCollection<GroupInfoList> groups = new ObservableCollection<GroupInfoList>();
 
@@ -183,9 +161,32 @@ namespace CountryPicker.UWP.Class.Models
                     groups.Move(groups.Count - 1, 0); 
                 }
             }
-           
+
+            FilteredCollection = groups;
 
             return groups;
+        }
+
+        public static int GetCountryModelIndex(string countryName)
+        {
+            var json = LoadCountriesJsonFile();
+
+            var countriesCollection =
+                JsonConvert.DeserializeObject<List<CountryModel>>(json).OrderBy(x => x.Group).ToList();
+
+            var last = countriesCollection[countriesCollection.Count - 1];
+            countriesCollection.Insert(0, last);
+            countriesCollection.RemoveAt(countriesCollection.Count - 1);
+
+            for (var index = 0; index < countriesCollection.Count; index++)
+            {
+                var countryModel = countriesCollection[index];
+                if (countryName != null && countryModel.Name.ToLower() == countryName.ToLower())
+                {
+                    return index;
+                }
+            }
+            return -1;
         }
 
         private static string LoadCountriesJsonFile()
@@ -200,6 +201,8 @@ namespace CountryPicker.UWP.Class.Models
             }
             return String.Empty;
         }
+
+        public static ObservableCollection<GroupInfoList> FilteredCollection { get; set; }
 
     }
 }

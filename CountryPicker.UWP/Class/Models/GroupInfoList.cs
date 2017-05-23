@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CountryPicker.UWP.Class.Models
 {
-    class GroupInfoList : List<object>
+    public class GroupInfoList : List<object>
     {
         public object Key { get; set; }
     }
