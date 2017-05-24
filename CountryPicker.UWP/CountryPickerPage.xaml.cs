@@ -19,6 +19,8 @@ namespace CountryPicker.UWP
         public CountryPickerPage()
         {
             this.InitializeComponent();
+
+
         }
 
         public CountryPickerPage(string countryName)

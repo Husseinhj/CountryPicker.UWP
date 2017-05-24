@@ -10,6 +10,7 @@ using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Animation;
 using CountryPicker.UWP.Class.Helper;
 using CountryPicker.UWP.Class.Models;
 
@@ -97,10 +98,10 @@ namespace CountryPicker.UWP.Class
             if (_dialog != null)
                 await _dialog.ShowAsync();
             else
-            {
+            { 
                 ChangeColor();
                 Frame rootFrame = Window.Current.Content as Frame;
-                if (rootFrame != null) rootFrame.Navigate(typeof(CountryPickerPage), _countryName);
+                if (rootFrame != null) rootFrame.Navigate(typeof(CountryPickerPage), _countryName, new SuppressNavigationTransitionInfo());
             }
         }
 
@@ -111,7 +112,11 @@ namespace CountryPicker.UWP.Class
             {
                 Frame rootFrame = Window.Current.Content as Frame;
 
-                if (rootFrame != null) rootFrame.GoBack();
+                if (rootFrame != null)
+                {
+                    if(rootFrame.CanGoBack)
+                        rootFrame.GoBack(new SlideNavigationTransitionInfo());
+                }
             }
         }
 
