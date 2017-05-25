@@ -380,9 +380,7 @@
     <Content Include="Assets\CountriesFlag\ZA.png" />
     <Content Include="Assets\CountriesFlag\ZM.png" />
     <Content Include="Assets\CountriesFlag\ZW.png" />
-    <Content Include="countires.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <None Include="countires.json" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="CountryPickerPage.xaml">

@@ -139,10 +139,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="CountryPicker.UWP, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\CountryPicker.UWP\bin\Debug\CountryPicker.UWP.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\CountryPicker.UWP\CountryPicker.UWP.csproj">
+      <Project>{ad228bda-c95d-44fe-a12f-61c5c359ab5e}</Project>
+      <Name>CountryPicker.UWP</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
