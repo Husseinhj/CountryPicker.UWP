@@ -1,5 +1,7 @@
-﻿using Windows.UI.Xaml;
+﻿using System;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using CountryPicker.UWP.Class.Models;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -14,16 +16,27 @@ namespace CountryPicker.Sample
         {
             this.InitializeComponent();
 
-            Loaded +=OnLoaded;
         }
 
-        private  void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        private void BtnCountryPicker_OnClick(object sender, RoutedEventArgs e)
         {
-            var s = new CountryPicker.UWP.Class.PickerDialog("Barbados");
-            s.Style = App.Current.Resources["ContentDialogStyle"] as Style;
-            
-            s.Show();
+            if (BtnCountryPicker.Content != null)
+            {
+                var countyPickerDialog = new UWP.Class.PickerDialog(BtnCountryPicker.Content.ToString())
+                {
+                    Style = Application.Current.Resources["ContentDialogStyle"] as Style
+                };
+                countyPickerDialog.SelectedCountry +=CountyPickerDialogOnSelectedCountry;
+
+                countyPickerDialog.Show();
+            }
         }
 
+        private void CountyPickerDialogOnSelectedCountry(object sender, CountryModel selected)
+        {
+            LblCountryCode.Text = String.Format("+{0}",selected.Code);
+
+            BtnCountryPicker.Content = selected.Name;
+        }
     }
 }

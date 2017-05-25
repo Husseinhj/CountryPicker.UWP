@@ -5,7 +5,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
 using Microsoft.Graphics.Canvas.Effects;
 
-namespace XamlBrewer.Uwp.Controls
+namespace CountryPicker.UWP.Class
 {
     /// <summary>
     /// A lightweight control to add blur and tint effect.

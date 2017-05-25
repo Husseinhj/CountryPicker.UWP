@@ -21,6 +21,9 @@ namespace CountryPicker.UWP.Class.Models
 
         private string _name;
 
+        /// <summary>
+        /// Country name
+        /// </summary>
         [JsonProperty(PropertyName = "name")]
         public string Name
         {
@@ -37,6 +40,9 @@ namespace CountryPicker.UWP.Class.Models
 
         private string _id;
 
+        /// <summary>
+        /// Country identifier
+        /// </summary>
         [JsonProperty(PropertyName = "id")]
         public string Id
         {
@@ -51,6 +57,9 @@ namespace CountryPicker.UWP.Class.Models
 
         private string _flag;
 
+        /// <summary>
+        /// Country flag path
+        /// </summary>
         [JsonProperty(PropertyName = "flag")]
         public string Flag
         {
@@ -64,6 +73,9 @@ namespace CountryPicker.UWP.Class.Models
 
         private string _code;
 
+        /// <summary>
+        /// Country code number
+        /// </summary>
         [JsonProperty(PropertyName = "code")]
         public string Code
         {
@@ -77,6 +89,9 @@ namespace CountryPicker.UWP.Class.Models
 
         private string _group;
 
+        /// <summary>
+        /// Country in which alphbatic group
+        /// </summary>
         [JsonProperty(PropertyName = "group")]
         public string Group
         {
@@ -90,14 +105,30 @@ namespace CountryPicker.UWP.Class.Models
 
         private Visibility _selected = Visibility.Collapsed;
 
+        /// <summary>
+        /// Selected or not
+        /// </summary>
         public Visibility Selected 
         {
             get => _selected;
             set => _selected = value;
         }
 
+        /// <summary>
+        /// Get collection of countries with filter
+        /// </summary>
+        public static ObservableCollection<GroupInfoList> FilteredCollection { get; set; }
+
         #endregion
 
+        /// <summary>
+        /// Create country model constractor
+        /// </summary>
+        /// <param name="id">Country identifier</param>
+        /// <param name="name">Country name</param>
+        /// <param name="code">Country code number</param>
+        /// <param name="group">Country is which alpbatic group</param>
+        /// <param name="isSelected">Country was selected or not</param>
         public CountryModel(string id,string name,string code, string group,bool isSelected = false)
         {
             this.Id = id;
@@ -106,7 +137,7 @@ namespace CountryPicker.UWP.Class.Models
             this.Group = group;
             this.Selected = isSelected ? Visibility.Visible : Visibility.Collapsed;
 
-            this.Flag = String.Format("Assets/CountriesFlag/{0}.png", id);
+            this.Flag = String.Format("ms-appx:///CountryPicker.UWP/Assets/CountriesFlag/{0}.png", id);
         }
 
         public CountryModel()
@@ -122,11 +153,20 @@ namespace CountryPicker.UWP.Class.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        /// <summary>
+        /// Get collection of all countries.
+        /// </summary>
+        /// <returns>Collection</returns>
         public static ObservableCollection<GroupInfoList> GetCountries()
         {
             return GetCountries("");
         }
 
+        /// <summary>
+        /// Get collection of countries with filter country name
+        /// </summary>
+        /// <param name="countryName">Country name</param>
+        /// <returns>Collection of countries</returns>
         public static ObservableCollection<GroupInfoList> GetCountries(string countryName)
         {
             var json = LoadCountriesJsonFile();
@@ -167,6 +207,11 @@ namespace CountryPicker.UWP.Class.Models
             return groups;
         }
 
+        /// <summary>
+        /// Get country model index in collection with Country name.
+        /// </summary>
+        /// <param name="countryName">Country name</param>
+        /// <returns>Index of country in countries collection</returns>
         public static int GetCountryModelIndex(string countryName)
         {
             var json = LoadCountriesJsonFile();
@@ -189,6 +234,10 @@ namespace CountryPicker.UWP.Class.Models
             return -1;
         }
 
+        /// <summary>
+        /// Load list of countries
+        /// </summary>
+        /// <returns></returns>
         private static string LoadCountriesJsonFile()
         {
             try
@@ -201,8 +250,6 @@ namespace CountryPicker.UWP.Class.Models
             }
             return String.Empty;
         }
-
-        public static ObservableCollection<GroupInfoList> FilteredCollection { get; set; }
 
     }
 }

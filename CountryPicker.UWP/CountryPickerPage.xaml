@@ -7,35 +7,38 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     RequestedTheme="Light">
-    
+
     <Page.Resources>
         <ResourceDictionary>
-            <CollectionViewSource 
-                x:Name="CountryVM" 
-                IsSourceGrouped="true" 
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="StaticResources/Fonts.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <CollectionViewSource
+                x:Name="CountryVM"
+                IsSourceGrouped="true"
                 Source="{Binding FilteredCollection}" />
+
         </ResourceDictionary>
     </Page.Resources>
 
     <Grid Background="White">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
         </Grid.RowDefinitions>
 
         <Border
             Height="45"
-            Background="#FF02A94F"
-            >
+            Background="#FF02A94F">
             <TextBlock
                 FontSize="14"
-                FontFamily="/Fonts/IRAN Sans.ttf#IRANSans"
+                FontFamily="{StaticResource IranSans}"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Foreground="White"
                 Text="Countries" />
         </Border>
-        
+
         <Grid Grid.Row="1">
 
             <Grid.RowDefinitions>
@@ -46,7 +49,7 @@
             <SearchBox
                 QueryChanged="SearchBox_OnQueryChanged"
                 FlowDirection="RightToLeft"
-                FontFamily="/Fonts/IRAN Sans.ttf#IRANSans"
+                FontFamily="{StaticResource IranSans}"
                 PlaceholderText="جستجو"
                 BorderBrush="#FF02A94F"
                 BorderThickness="0,0,0,0.8"
@@ -78,7 +81,7 @@
                                     Margin="-8"
                                     Background="#f7f7f7">
                                     <TextBlock
-                                        FontFamily="/Fonts/IRAN Sans.ttf#IRANSans"
+                                        FontFamily="{StaticResource IranSans}"
                                         Margin="20,0"
                                         VerticalAlignment="Center"
                                         Text="{Binding Key}"
@@ -86,16 +89,6 @@
                                 </Border>
                             </DataTemplate>
                         </GroupStyle.HeaderTemplate>
-                        <GroupStyle.ContainerStyle>
-                            <Style TargetType="GroupItem">
-                                <Setter Property="MinWidth" Value="4024" />
-                                <Setter Property="BorderThickness" Value="0" />
-                                <Setter Property="BorderBrush" Value="Transparent" />
-                                <Setter Property="Background" Value="#f7f7f7" />
-                                <Setter Property="Width" Value="50" />
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                            </Style>
-                        </GroupStyle.ContainerStyle>
                     </GroupStyle>
                 </ListView.GroupStyle>
 
@@ -106,6 +99,11 @@
                             Tag="{Binding Code}"
                             BorderBrush="#ebebeb"
                             BorderThickness="0,0,0,0.4">
+                            <Grid.Transitions>
+                                <TransitionCollection>
+                                    <AddDeleteThemeTransition />
+                                </TransitionCollection>
+                            </Grid.Transitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
@@ -120,7 +118,7 @@
                                 Stretch="Uniform" />
 
                             <TextBlock
-                                FontFamily="/Fonts/IRAN Sans.ttf#IRANSans"
+                                FontFamily="{StaticResource IranSans}"
                                 Grid.Column="1"
                                 Margin="10,0"
                                 VerticalAlignment="Center"
@@ -140,6 +138,7 @@
 
                     </DataTemplate>
                 </ListView.ItemTemplate>
+
             </ListView>
 
         </Grid>
