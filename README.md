@@ -2,9 +2,11 @@
 Country picker control for Windows Universal App
 Support target UWP >= 10.0 Build 10240 
 
-To install CountryPicker for UWP, run the following command in the Package Manager Console
+To install CountryPicker for UWP, run the following command in the [Package Manager Console](https://www.nuget.org/packages/CountryPicker.UWP/)
 
 ![Install-Package CountryPicker.UWP](http://uupload.ir/files/8xms_nuget_countrypicker.png)
+
+[Download package](https://www.nuget.org/packages/CountryPicker.UWP/) 
 
 Release Notes
 v1.3.0
