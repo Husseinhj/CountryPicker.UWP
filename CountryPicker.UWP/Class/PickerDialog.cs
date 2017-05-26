@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
+using Windows.Foundation.Metadata;
 using Windows.Graphics.Display;
 using Windows.UI;
 using Windows.UI.ViewManagement;
@@ -12,7 +13,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
-using CountryPicker.UWP.Class.Helper;
 using CountryPicker.UWP.Class.Models;
 
 namespace CountryPicker.UWP.Class
@@ -52,7 +52,7 @@ namespace CountryPicker.UWP.Class
 
         public PickerDialog()
         {
-            Init();
+            SetEvents();
         }
 
         /// <summary>
@@ -62,91 +62,89 @@ namespace CountryPicker.UWP.Class
         public PickerDialog(string countryName)
         {
             CountryName = countryName;
-            
-            Init();
+            SetEvents();
         }
+
+        #region Private methods
 
         /// <summary>
         /// Set county picker events for fire class events
         /// </summary>
         private void SetEvents()
         {
-            CountryPickerPage.SelectedCountry += delegate (object sender, CountryModel selected)
-            {
-                CountryName = selected.Name;
+            CountryPickerPage.ClearSelectedEvents();
+            CountryPickerPage.SelectedCountryEvent += CountryPickerPageOnSelectedCountry;
 
-                if (SelectedCountry != null) SelectedCountry.Invoke(sender, selected);
-
-                Hide();
-            };
-
-            CountryPickerPage.BackButtonClicked += delegate (object sender)
-            {
-                BackButtonClicked?.Invoke(this);
-
-                Hide();
-            };
+            CountryPickerPage.ClearBackEvents();
+            CountryPickerPage.BackButtonClickedEvent += CountryPickerPageOnBackButtonClicked;
         }
 
-        private CountryPickerPage _countryPage;
-        private Frame _frame;
+        private void CountryPickerPageOnBackButtonClicked(object sender)
+        {
+            BackButtonClicked?.Invoke(this);
+            Hide();
+        }
+
+        private void CountryPickerPageOnSelectedCountry(object o, CountryModel selected)
+        {
+            CountryName = selected.Name;
+
+            if (SelectedCountry != null) SelectedCountry.Invoke(o, selected);
+
+            Hide();
+        }
+
         private void Init()
         {
-            SetEvents();
-
-            if (!UniversalHelper.UniversalClass.IsPhone())
+            if (!IsPhone())
             {
                 _dialog = new ContentDialog()
                 {
                     VerticalContentAlignment = VerticalAlignment.Stretch,
                     HorizontalContentAlignment = HorizontalAlignment.Stretch,
-                    Style = Style
+                    Background = new SolidColorBrush(Color.FromArgb(20,50,50,50)),
+                    FullSizeDesired = true,
+
                 };
 
-                _frame = new Frame();
+                var frame = new Frame();
 
-                _dialog.SizeChanged += (sender, args) =>
-                {
-                    var mobile = UniversalHelper.UniversalClass.IsMobileWithResponsiveDesign();
+                var countryPage = new CountryPickerPage(CountryName);
+                countryPage.InitializeProperties(this);
 
-                    if (_countryPage != null)
-                    {
-                        if (mobile)
-                        {
-                            _countryPage.Width = args.NewSize.Width-60;
-                            _countryPage.Height = args.NewSize.Height-80;
-                        }
-                        else
-                        {
-                            _countryPage.Width = 360;
-                            _countryPage.Height = 600;
-                        }
-                    }
-                };
+                frame.Content = countryPage;
 
-                _dialog.Content = _frame;
+                _dialog.Content = frame;
             }
         }
+
+        private bool IsPhone()
+        {
+            return ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar");
+        }
+        #endregion
+
+        #region Public methods
 
         /// <summary>
         /// Show picker dialog
         /// </summary>
-        public async Task ShowAsync()
+        public async void Show()
         {
             ChangeColor();
+            Init();
 
             if (_dialog != null)
             {
-                _countryPage = new CountryPickerPage(CountryName);
-                _countryPage.InitializeProperties(this);
-                _frame.Content = _countryPage;
+                if (Style != null) _dialog.Style = Style;
+
                 await _dialog.ShowAsync();
             }
             else
             {
                 Frame rootFrame = Window.Current.Content as Frame;
-                if (rootFrame != null)
-                    rootFrame.Navigate(typeof(CountryPickerPage), this, new SuppressNavigationTransitionInfo());
+
+                rootFrame?.Navigate(typeof(CountryPickerPage), this, new SuppressNavigationTransitionInfo());
             }
         }
 
@@ -155,7 +153,11 @@ namespace CountryPicker.UWP.Class
         /// </summary>
         public void Hide()
         {
-            if (_dialog != null) _dialog.Hide();
+            if (_dialog != null)
+            {
+                _dialog.Hide();
+                _dialog = null;
+            }
             else
             {
                 Frame rootFrame = Window.Current.Content as Frame;
@@ -175,7 +177,7 @@ namespace CountryPicker.UWP.Class
         {
             if (IsUseColorInStatusBarOrTitleBar)
             {
-                if (UniversalHelper.UniversalClass.IsPhone())
+                if (IsPhone())
                 {
                     StatusBar.GetForCurrentView().BackgroundOpacity = 1;
 
@@ -192,5 +194,7 @@ namespace CountryPicker.UWP.Class
                 }
             }
         }
+
+        #endregion
     }
 }

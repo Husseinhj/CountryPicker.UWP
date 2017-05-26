@@ -8,6 +8,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using CountryPicker.UWP.Class;
 using CountryPicker.UWP.Class.Models;
 
 //Hussein.Juybari@gmail.com
@@ -27,14 +28,20 @@ namespace CountryPicker.UWP
         /// <summary>
         /// Event fire when user click country
         /// </summary>
-        internal static event SelectedCountryEventHandler SelectedCountry;
+        public static event SelectedCountryEventHandler SelectedCountryEvent;
 
         /// <summary>
         /// Event fire when Hardware back button pressed or Header back button was clicked.
         /// </summary>
-        internal static event BackButtonPressedEventHandler BackButtonClicked; 
+        public static event BackButtonPressedEventHandler BackButtonClickedEvent; 
 
         #region Properties
+
+        public FlowDirection SearchBoxFlowDirection
+        {
+            get { return TxtSearchBox.FlowDirection; }
+            set { TxtSearchBox.FlowDirection = value; }
+        }
 
         private string _countryName;
 
@@ -145,7 +152,7 @@ namespace CountryPicker.UWP
         {
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
             {
-                CountryListView.SelectedIndex = CountryModel.GetCountryModelIndex(_countryName);
+                CountryListView.SelectedIndex = CountryModel.GetCountryModelIndex(CountryName);
                 CountryListView.ScrollIntoView(CountryListView.SelectedItem);
             });
         }
@@ -166,35 +173,38 @@ namespace CountryPicker.UWP
             }
 
             if (ApiInformation.IsApiContractPresent("Windows.Phone.PhoneContract", 1, 0))
-                Windows.Phone.UI.Input.HardwareButtons.BackPressed += HardwareButtonsOnBackPressed;
+            {
+                Windows.Phone.UI.Input.HardwareButtons.BackPressed -= HardwareButtonsOnBackPressed;
+                HardwareButtons.BackPressed += HardwareButtonsOnBackPressed;
+            }
             else
+            {
+                Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested -= OnBackRequested;
                 Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
+            }
         }
 
         private void OnBackRequested(object sender, BackRequestedEventArgs backRequestedEventArgs)
         {
-            BackButtonClicked?.Invoke(this);
+            backRequestedEventArgs.Handled = true;
+            BackButtonClickedEvent?.Invoke(this);
         }
 
         private void HardwareButtonsOnBackPressed(object sender, BackPressedEventArgs backPressedEventArgs)
         {
-            BackButtonClicked?.Invoke(this);
+            backPressedEventArgs.Handled = true;
+            BackButtonClickedEvent?.Invoke(this);
         }
 
         private void BtnBackButton_OnClick(object sender, RoutedEventArgs e)
         {
-            BackButtonClicked?.Invoke(this);
+            BackButtonClickedEvent?.Invoke(this);
         }
 
         private void CountryListViewOnItemClick(object sender, ItemClickEventArgs itemClickEventArgs)
         {
-            //if (CountryListView.SelectedIndex != -1)
-            {
-                var model = itemClickEventArgs.ClickedItem as CountryModel;
-                if (SelectedCountry != null)
-                    SelectedCountry.Invoke(CountryListView, model);
-            }
-            
+            var model = itemClickEventArgs.ClickedItem as CountryModel;
+            SelectedCountryEvent?.Invoke(CountryListView, model);
         }
 
         private void SearchBox_OnQueryChanged(SearchBox sender, SearchBoxQueryChangedEventArgs args)
@@ -214,10 +224,9 @@ namespace CountryPicker.UWP
         {
             CountryVM.Source = CountryModel.GetCountries();
 
+            CountryListView.ItemClick -= CountryListViewOnItemClick;
             CountryListView.ItemClick += CountryListViewOnItemClick;
             CountryListView.IsItemClickEnabled = true;
-
-            _countryName = countryName;
         }
 
         /// <summary>
@@ -236,9 +245,26 @@ namespace CountryPicker.UWP
 
             if (!string.IsNullOrEmpty(initialize.BackButtonText)) BackButtonText = initialize.BackButtonText;
             ShowBackButton = initialize.ShowBackButton;
+
+            CountryName = initialize.CountryName;
+
+            SearchBoxFlowDirection = initialize.SearchBoxFlowDirection;
         }
 
         #endregion
 
+        #region Public methods
+
+        public static void ClearSelectedEvents()
+        {
+            SelectedCountryEvent = (SelectedCountryEventHandler)Delegate.RemoveAll(SelectedCountryEvent, SelectedCountryEvent);// Then you will find SomeEvent is set to null.
+        }
+
+        public static void ClearBackEvents()
+        {
+            BackButtonClickedEvent = (BackButtonPressedEventHandler)Delegate.RemoveAll(BackButtonClickedEvent, BackButtonClickedEvent);// Then you will find SomeEvent is set to null.
+        }
+
+        #endregion
     }
 }

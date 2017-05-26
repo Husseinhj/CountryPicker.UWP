@@ -65,7 +65,6 @@
             <SearchBox
                 Name="TxtSearchBox"
                 QueryChanged="SearchBox_OnQueryChanged"
-                FlowDirection="RightToLeft"
                 FontFamily="{StaticResource IranSans}"
                 PlaceholderText="جستجو"
                 BorderBrush="#FF02A94F"
@@ -157,7 +156,7 @@
                 </ListView.ItemTemplate>
 
             </ListView>
-
+            
         </Grid>
     </Grid>
 </Page>

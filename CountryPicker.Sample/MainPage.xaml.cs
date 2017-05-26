@@ -18,30 +18,31 @@ namespace CountryPicker.Sample
             this.InitializeComponent();
         }
 
-        private async void BtnCountryPicker_OnClick(object sender, RoutedEventArgs e)
+        private void BtnCountryPicker_OnClick(object sender, RoutedEventArgs e)
         {
             if (BtnCountryPicker.Content != null)
             {
-                var countyPickerDialog = new UWP.Class.PickerDialog()
+                var countryPickerDialog = new UWP.Class.PickerDialog()
                 {
                     CountryName = BtnCountryPicker.Content.ToString(),
-                    Style = Application.Current.Resources["ContentDialogStyle"] as Style,
                     SearchBoxPlaceHolder = "Search",
-                    Header = "Choose country"
+                    Header = "Choose country",
+                    SearchBoxFlowDirection = FlowDirection.LeftToRight
                 };
-                countyPickerDialog.SelectedCountry += CountyPickerDialogOnSelectedCountry;
 
-                await countyPickerDialog.ShowAsync();
+                countryPickerDialog.SelectedCountry += CountyPickerDialogOnSelectedCountry;
+
+                countryPickerDialog.Show();
             }
         }
 
         private void CountyPickerDialogOnSelectedCountry(object sender, CountryModel selected)
         {
-            LblCountryCode.Text = String.Format("+{0}",selected.Code);
+            LblCountryCode.Text = String.Format("+{0}", selected.Code);
 
             BtnCountryPicker.Content = selected.Name;
 
-            ImgFlag.Source = new BitmapImage(new Uri(selected.Flag,UriKind.RelativeOrAbsolute));
+            ImgFlag.Source = new BitmapImage(new Uri(selected.Flag, UriKind.RelativeOrAbsolute));
         }
     }
 }

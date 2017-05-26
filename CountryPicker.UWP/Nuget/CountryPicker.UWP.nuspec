@@ -2,19 +2,18 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>CountryPicker.UWP</id>
-    <version>1.0.0</version>
+    <version>1.3.0</version>
     <title>CountryPicker for UWP</title>
     <authors>Hussein.Juybari</authors>
-    <owners>Hussein Habibi Juybari</owners>
-	<projectUrl>https://github.com/Husseinhj/CountryPicker.UWP</projectUrl>
-    <!-- The icon is used in Visual Studio's package manager UI -->
-    <iconUrl>http://uupload.ir/files/xn0v_flag.png</iconUrl>
+    <owners>HusseinHJ</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>This country picker have country code and Show in mobile page country picker and in desktop show ContentDialog country picker</description>
     <copyright>Copyright ©  2017</copyright>
-	<tags>UWP CountryPicker Iran CountryCode C#</tags>
-    <dependencies>
-        <dependency id="Newtonsoft.Json" version="9.0.1" />
-    </dependencies>
+	<releaseNotes>
+	+New properties for customize picker
+	+Add back button and event
+	-fix bugs and improve preformance
+	</releaseNotes>
+    <dependencies />
   </metadata>
 </package>

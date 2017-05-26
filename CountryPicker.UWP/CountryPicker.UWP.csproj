@@ -106,8 +106,6 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Class\BackDrop.cs" />
-    <Compile Include="Class\Helper\UniversalHelper.cs" />
     <Compile Include="Class\Models\CountryModel.cs" />
     <Compile Include="Class\Models\GroupInfoList.cs" />
     <Compile Include="Class\Models\InitializeModel.cs" />

@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 
 namespace CountryPicker.UWP.Class.Models
 {
     public abstract class InitializeModel
     {
+        public FlowDirection SearchBoxFlowDirection { get; set; } = FlowDirection.RightToLeft;
         /// <summary>
         /// Show header color in titlebar (Windows desktop) and Statusbar (Windows mobile)
         /// </summary>

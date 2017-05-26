@@ -49,7 +49,7 @@
                         Text="Country" />
 
                     <Image
-                        Name="ImgFlag"
+                        x:Name="ImgFlag"
                         Width="48"
                         Height="48"
                         VerticalAlignment="Center"
@@ -58,7 +58,7 @@
                         />
 
                     <Button
-                        Name="BtnCountryPicker"
+                        x:Name="BtnCountryPicker"
                         HorizontalContentAlignment="Left"
                         Foreground="Black"
                         Grid.Row="1"
@@ -80,7 +80,7 @@
                     </Grid.ColumnDefinitions>
                     
                     <TextBlock
-                        Name="LblCountryCode"
+                        x:Name="LblCountryCode"
                         Margin="10,5"
                        VerticalAlignment="Center"
                         FontSize="25"
