@@ -1,6 +1,7 @@
 ﻿using System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Imaging;
 using CountryPicker.UWP.Class.Models;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -15,20 +16,22 @@ namespace CountryPicker.Sample
         public MainPage()
         {
             this.InitializeComponent();
-
         }
 
-        private void BtnCountryPicker_OnClick(object sender, RoutedEventArgs e)
+        private async void BtnCountryPicker_OnClick(object sender, RoutedEventArgs e)
         {
             if (BtnCountryPicker.Content != null)
             {
-                var countyPickerDialog = new UWP.Class.PickerDialog(BtnCountryPicker.Content.ToString())
+                var countyPickerDialog = new UWP.Class.PickerDialog()
                 {
-                    Style = Application.Current.Resources["ContentDialogStyle"] as Style
+                    CountryName = BtnCountryPicker.Content.ToString(),
+                    Style = Application.Current.Resources["ContentDialogStyle"] as Style,
+                    SearchBoxPlaceHolder = "Search",
+                    Header = "Choose country"
                 };
-                countyPickerDialog.SelectedCountry +=CountyPickerDialogOnSelectedCountry;
+                countyPickerDialog.SelectedCountry += CountyPickerDialogOnSelectedCountry;
 
-                countyPickerDialog.Show();
+                await countyPickerDialog.ShowAsync();
             }
         }
 
@@ -37,6 +40,8 @@ namespace CountryPicker.Sample
             LblCountryCode.Text = String.Format("+{0}",selected.Code);
 
             BtnCountryPicker.Content = selected.Name;
+
+            ImgFlag.Source = new BitmapImage(new Uri(selected.Flag,UriKind.RelativeOrAbsolute));
         }
     }
 }

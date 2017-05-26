@@ -14,7 +14,7 @@
     <copyright>Copyright ©  2017</copyright>
 	<tags>UWP CountryPicker Iran CountryCode C#</tags>
     <dependencies>
-        <dependency id="Newtonsoft.Json"/>
+        <dependency id="Newtonsoft.Json" version="9.0.1" />
     </dependencies>
   </metadata>
 </package>

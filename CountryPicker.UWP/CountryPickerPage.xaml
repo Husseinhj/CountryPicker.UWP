@@ -28,15 +28,31 @@
         </Grid.RowDefinitions>
 
         <Border
+            Name="BorderHeader"
             Height="45"
             Background="#FF02A94F">
-            <TextBlock
-                FontSize="14"
-                FontFamily="{StaticResource IranSans}"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
-                Foreground="White"
-                Text="Countries" />
+            <Grid>
+                <TextBlock
+                    Name="LblTitle"
+                    FontSize="14"
+                    FontFamily="{StaticResource IranSans}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Foreground="White"
+                    Text="Countries" />
+                
+                <Button
+                    Click="BtnBackButton_OnClick"
+                    Name="BtnBackButton"
+                    Padding="15,8"
+                    BorderThickness="0"
+                    Background="Transparent"
+                    Foreground="White"
+                    Content="&#xE0A6;"
+                    Margin="5,0" 
+                    FontFamily="Segoe MDL2 Assets"
+                    />
+            </Grid>
         </Border>
 
         <Grid Grid.Row="1">
@@ -47,6 +63,7 @@
             </Grid.RowDefinitions>
 
             <SearchBox
+                Name="TxtSearchBox"
                 QueryChanged="SearchBox_OnQueryChanged"
                 FlowDirection="RightToLeft"
                 FontFamily="{StaticResource IranSans}"

@@ -10,54 +10,90 @@ using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using CountryPicker.UWP.Class.Helper;
 using CountryPicker.UWP.Class.Models;
 
 namespace CountryPicker.UWP.Class
 {
-    public class PickerDialog
+    public class PickerDialog : InitializeModel
     {
-        public event CountryPickerPage.SelectedCountryEventHandler SelectedCountry;
+        public delegate void SelectedCountryEventHandler(object sender, CountryModel selected);
+
+        public delegate void BackButtonPressedEventHandler(object sender);
+
+        /// <summary>
+        /// Event fire when user click country
+        /// </summary>
+        public event SelectedCountryEventHandler SelectedCountry;
+
+        /// <summary>
+        /// Event fire when Hardware back button pressed or Header back button was clicked.
+        /// </summary>
+        public event BackButtonPressedEventHandler BackButtonClicked;
 
         private ContentDialog _dialog;
 
-        private string _countryName;
-        public string CountryName
-        {
-            get => _countryName;
-            set => _countryName = value;
-        }
+        #region Properties
 
         private Style _style;
 
+        /// <summary>
+        /// Style for Content dialog
+        /// </summary>
         public Style Style
         {
             get => _style;
             set => _style = value;
         }
 
+        #endregion
+
         public PickerDialog()
         {
             Init();
         }
 
+        /// <summary>
+        /// Contractor with select country
+        /// </summary>
+        /// <param name="countryName"></param>
         public PickerDialog(string countryName)
         {
-            _countryName = countryName;
+            CountryName = countryName;
+            
             Init();
         }
 
-        private void Init()
+        /// <summary>
+        /// Set county picker events for fire class events
+        /// </summary>
+        private void SetEvents()
         {
-            CountryPickerPage.SelectedCountry += delegate(object sender, CountryModel selected)
+            CountryPickerPage.SelectedCountry += delegate (object sender, CountryModel selected)
             {
-                _countryName = selected.Name;
+                CountryName = selected.Name;
 
                 if (SelectedCountry != null) SelectedCountry.Invoke(sender, selected);
 
                 Hide();
             };
+
+            CountryPickerPage.BackButtonClicked += delegate (object sender)
+            {
+                BackButtonClicked?.Invoke(this);
+
+                Hide();
+            };
+        }
+
+        private CountryPickerPage _countryPage;
+        private Frame _frame;
+        private void Init()
+        {
+            SetEvents();
+
             if (!UniversalHelper.UniversalClass.IsPhone())
             {
                 _dialog = new ContentDialog()
@@ -67,44 +103,56 @@ namespace CountryPicker.UWP.Class
                     Style = Style
                 };
 
-                Frame frame = new Frame();
-                var countryPage = new CountryPickerPage(_countryName);
-
-
-                frame.Content = countryPage;
+                _frame = new Frame();
 
                 _dialog.SizeChanged += (sender, args) =>
                 {
                     var mobile = UniversalHelper.UniversalClass.IsMobileWithResponsiveDesign();
 
-                    if (mobile)
+                    if (_countryPage != null)
                     {
-                        countryPage.Width = args.NewSize.Width-60;
-                        countryPage.Height = args.NewSize.Height-80;
-                    }
-                    else
-                    {
-                        countryPage.Width = 360;
-                        countryPage.Height = 600;
+                        if (mobile)
+                        {
+                            _countryPage.Width = args.NewSize.Width-60;
+                            _countryPage.Height = args.NewSize.Height-80;
+                        }
+                        else
+                        {
+                            _countryPage.Width = 360;
+                            _countryPage.Height = 600;
+                        }
                     }
                 };
 
-                _dialog.Content = frame;
+                _dialog.Content = _frame;
             }
         }
 
-        public async void Show()
+        /// <summary>
+        /// Show picker dialog
+        /// </summary>
+        public async Task ShowAsync()
         {
+            ChangeColor();
+
             if (_dialog != null)
+            {
+                _countryPage = new CountryPickerPage(CountryName);
+                _countryPage.InitializeProperties(this);
+                _frame.Content = _countryPage;
                 await _dialog.ShowAsync();
+            }
             else
-            { 
-                ChangeColor();
+            {
                 Frame rootFrame = Window.Current.Content as Frame;
-                if (rootFrame != null) rootFrame.Navigate(typeof(CountryPickerPage), _countryName, new SuppressNavigationTransitionInfo());
+                if (rootFrame != null)
+                    rootFrame.Navigate(typeof(CountryPickerPage), this, new SuppressNavigationTransitionInfo());
             }
         }
 
+        /// <summary>
+        /// Hide Picker dialog
+        /// </summary>
         public void Hide()
         {
             if (_dialog != null) _dialog.Hide();
@@ -123,13 +171,25 @@ namespace CountryPicker.UWP.Class
         /// <summary>
         /// Change Title bar in Windows 10 and change Status bar in Windows Phone device color.
         /// </summary>
-        public static void ChangeColor()
+        public void ChangeColor()
         {
-            if (UniversalHelper.UniversalClass.IsPhone())
+            if (IsUseColorInStatusBarOrTitleBar)
             {
-                StatusBar.GetForCurrentView().BackgroundOpacity = 1;
-                StatusBar.GetForCurrentView().BackgroundColor = Color.FromArgb(1,2, 169, 79);
-                StatusBar.GetForCurrentView().ForegroundColor = Colors.White;
+                if (UniversalHelper.UniversalClass.IsPhone())
+                {
+                    StatusBar.GetForCurrentView().BackgroundOpacity = 1;
+
+                    StatusBar.GetForCurrentView().BackgroundColor = (HeaderBackground as SolidColorBrush)?.Color ?? Color.FromArgb(1, 2, 169, 79);
+
+                    StatusBar.GetForCurrentView().ForegroundColor = Colors.White;
+                }
+                else
+                {
+                    var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+                    titleBar.BackgroundColor = (HeaderBackground as SolidColorBrush)?.Color ?? Color.FromArgb(1, 2, 169, 79);
+                    titleBar.ButtonBackgroundColor = titleBar.BackgroundColor;
+                    titleBar.ForegroundColor = Colors.White;
+                }
             }
         }
     }

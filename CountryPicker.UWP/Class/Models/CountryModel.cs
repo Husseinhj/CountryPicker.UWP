@@ -50,7 +50,7 @@ namespace CountryPicker.UWP.Class.Models
             set
             {
                 _id = value;
-                this.Flag = String.Format("Assets/CountriesFlag/{0}.png", _id);
+                this.Flag = String.Format("ms-appx:///CountryPicker.UWP/Assets/CountriesFlag/{0}.png", _id);
                 OnPropertyChanged();
             }
         }

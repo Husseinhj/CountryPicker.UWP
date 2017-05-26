@@ -25,6 +25,8 @@
         </Border>
 
         <ScrollViewer 
+            Margin="10"
+            VerticalScrollBarVisibility="Hidden"
             VerticalAlignment="Center"
             Grid.Row="1"
             >
@@ -39,12 +41,21 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock
-                        Margin="20,5"
+                        Margin="0,5"
                         FontSize="14"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Left"
                         Foreground="Gray"
                         Text="Country" />
+
+                    <Image
+                        Name="ImgFlag"
+                        Width="48"
+                        Height="48"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
+                        Grid.Row="1" Source="Assets/US.png"
+                        />
 
                     <Button
                         Name="BtnCountryPicker"
@@ -54,7 +65,7 @@
                         Background="Transparent"
                         Padding="10"
                         Content="United States of America"
-                        Margin="30,5"
+                        Margin="55,5,30,5"
                         Click="BtnCountryPicker_OnClick"
                         HorizontalAlignment="Stretch"/>
                 </Grid>

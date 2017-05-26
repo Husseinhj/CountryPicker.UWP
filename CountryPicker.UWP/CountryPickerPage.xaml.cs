@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
+using Windows.Foundation.Metadata;
+using Windows.Phone.UI.Input;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using CountryPicker.UWP.Class.Models;
 
@@ -13,14 +18,21 @@ namespace CountryPicker.UWP
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class CountryPickerPage : Page
+    internal sealed partial class CountryPickerPage : Page
     {
-        public  delegate void SelectedCountryEventHandler(object sender, CountryModel selected);
+        internal  delegate void SelectedCountryEventHandler(object sender, CountryModel selected);
+
+        internal delegate void BackButtonPressedEventHandler(object sender);
 
         /// <summary>
         /// Event fire when user click country
         /// </summary>
-        public static event SelectedCountryEventHandler SelectedCountry;
+        internal static event SelectedCountryEventHandler SelectedCountry;
+
+        /// <summary>
+        /// Event fire when Hardware back button pressed or Header back button was clicked.
+        /// </summary>
+        internal static event BackButtonPressedEventHandler BackButtonClicked; 
 
         #region Properties
 
@@ -38,9 +50,78 @@ namespace CountryPicker.UWP
             }
         }
 
+        /// <summary>
+        /// Show picker header
+        /// </summary>
+        public bool ShowHeader
+        {
+            get { return BorderHeader.Visibility == Visibility.Visible; }
+            set { BorderHeader.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
+        }
+
+        /// <summary>
+        /// Text of header
+        /// </summary>
+        public string Header
+        {
+            get { return LblTitle.Text; }
+            set { LblTitle.Text = value; }
+        }
+
+        /// <summary>
+        /// Searchbar placeholder
+        /// </summary>
+        public string SearchBoxPlaceHolder
+        {
+            get { return TxtSearchBox.PlaceholderText; }
+            set { TxtSearchBox.PlaceholderText = value; }
+        }
+
+        /// <summary>
+        /// Header background
+        /// </summary>
+        public Brush HeaderBackground
+        {
+            get { return BorderHeader.Background; }
+            set
+            {
+                BorderHeader.Background = value;
+                TxtSearchBox.BorderBrush = value;
+            }
+        }
+
+        /// <summary>
+        /// Searchbar FontFamily
+        /// </summary>
+        public FontFamily SearchBoxFontFamily
+        {
+            get { return TxtSearchBox.FontFamily; }
+            set { TxtSearchBox.FontFamily = value; }
+        }
+
+        /// <summary>
+        /// Header FontFamily
+        /// </summary>
+        public FontFamily HeaderFontFamily
+        {
+            get { return LblTitle.FontFamily; }
+            set { LblTitle.FontFamily = value; }
+        }
+
+        public bool ShowBackButton
+        {
+            get {return BtnBackButton.Visibility == Visibility.Visible;}
+            set { BtnBackButton.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
+        }
+
+        public string BackButtonText
+        {
+            get { return BtnBackButton.Content?.ToString(); }
+            set { BtnBackButton.Content = value; }
+        }
         #endregion
 
-        public CountryPickerPage()
+        internal CountryPickerPage()
         {
             this.InitializeComponent();
 
@@ -48,7 +129,7 @@ namespace CountryPicker.UWP
             Loaded += OnLoaded;
         }
 
-        public CountryPickerPage(string countryName)
+        internal CountryPickerPage(string countryName)
         {
             this.InitializeComponent();
 
@@ -77,10 +158,32 @@ namespace CountryPicker.UWP
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            if (e.Parameter is string)
+
+            if (e.Parameter is InitializeModel)
             {
-                CountryName = e.Parameter.ToString();
+                var model = e.Parameter as InitializeModel;
+                InitializeProperties(model);
             }
+
+            if (ApiInformation.IsApiContractPresent("Windows.Phone.PhoneContract", 1, 0))
+                Windows.Phone.UI.Input.HardwareButtons.BackPressed += HardwareButtonsOnBackPressed;
+            else
+                Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
+        }
+
+        private void OnBackRequested(object sender, BackRequestedEventArgs backRequestedEventArgs)
+        {
+            BackButtonClicked?.Invoke(this);
+        }
+
+        private void HardwareButtonsOnBackPressed(object sender, BackPressedEventArgs backPressedEventArgs)
+        {
+            BackButtonClicked?.Invoke(this);
+        }
+
+        private void BtnBackButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            BackButtonClicked?.Invoke(this);
         }
 
         private void CountryListViewOnItemClick(object sender, ItemClickEventArgs itemClickEventArgs)
@@ -117,6 +220,25 @@ namespace CountryPicker.UWP
             _countryName = countryName;
         }
 
+        /// <summary>
+        /// Initialize visual parameters.
+        /// </summary>
+        /// <param name="initialize">Initialize model</param>
+        public void InitializeProperties(InitializeModel initialize)
+        {
+            if (initialize.SearchBoxFontFamily != null) SearchBoxFontFamily = initialize.SearchBoxFontFamily;
+            if (!string.IsNullOrEmpty(initialize.SearchBoxPlaceHolder) ) SearchBoxPlaceHolder = initialize.SearchBoxPlaceHolder;
+
+            if (!string.IsNullOrEmpty(initialize.Header)) Header = initialize.Header;
+            ShowHeader = initialize.ShowHeader;
+            if (initialize.HeaderBackground != null) HeaderBackground = initialize.HeaderBackground;
+            if (initialize.HeaderFontFamily != null) HeaderFontFamily = initialize.HeaderFontFamily;
+
+            if (!string.IsNullOrEmpty(initialize.BackButtonText)) BackButtonText = initialize.BackButtonText;
+            ShowBackButton = initialize.ShowBackButton;
+        }
+
         #endregion
+
     }
 }

@@ -110,6 +110,7 @@
     <Compile Include="Class\Helper\UniversalHelper.cs" />
     <Compile Include="Class\Models\CountryModel.cs" />
     <Compile Include="Class\Models\GroupInfoList.cs" />
+    <Compile Include="Class\Models\InitializeModel.cs" />
     <Compile Include="Class\PickerDialog.cs" />
     <Compile Include="CountryPickerPage.xaml.cs">
       <DependentUpon>CountryPickerPage.xaml</DependentUpon>
