@@ -129,7 +129,7 @@ namespace CountryPicker.UWP.Class
         /// <summary>
         /// Show picker dialog
         /// </summary>
-        public async void Show()
+        public async Task ShowAsync()
         {
             ChangeColor();
             Init();

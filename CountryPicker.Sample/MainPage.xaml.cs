@@ -18,7 +18,7 @@ namespace CountryPicker.Sample
             this.InitializeComponent();
         }
 
-        private void BtnCountryPicker_OnClick(object sender, RoutedEventArgs e)
+        private async void BtnCountryPicker_OnClick(object sender, RoutedEventArgs e)
         {
             if (BtnCountryPicker.Content != null)
             {
@@ -32,7 +32,7 @@ namespace CountryPicker.Sample
 
                 countryPickerDialog.SelectedCountry += CountyPickerDialogOnSelectedCountry;
 
-                countryPickerDialog.Show();
+                await countryPickerDialog.ShowAsync();
             }
         }
 
