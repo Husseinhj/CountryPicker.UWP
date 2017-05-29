@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading.Tasks;
 using Windows.Foundation.Metadata;
 using Windows.Phone.UI.Input;
 using Windows.UI.Core;
@@ -148,18 +149,14 @@ namespace CountryPicker.UWP
 
         #region Private event methods
 
-        private async void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
-            {
-                CountryListView.SelectedIndex = CountryModel.GetCountryModelIndex(CountryName);
-                CountryListView.ScrollIntoView(CountryListView.SelectedItem);
-            });
+            
         }
 
-        private void OnLoading(FrameworkElement sender, object args)
+        private async void OnLoading(FrameworkElement sender, object args)
         {
-            LoadData(CountryName);
+            await LoadData(CountryName);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -220,13 +217,25 @@ namespace CountryPicker.UWP
         /// Load data and show them
         /// </summary>
         /// <param name="countryName"></param>
-        private void LoadData(string countryName = "")
+        private async Task LoadData(string countryName = "")
         {
-            CountryVM.Source = CountryModel.GetCountries();
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Low,async delegate
+            {
+                CountryVM.Source = CountryModel.GetCountries();
 
-            CountryListView.ItemClick -= CountryListViewOnItemClick;
-            CountryListView.ItemClick += CountryListViewOnItemClick;
-            CountryListView.IsItemClickEnabled = true;
+                CountryListView.ItemClick -= CountryListViewOnItemClick;
+                CountryListView.ItemClick += CountryListViewOnItemClick;
+                CountryListView.IsItemClickEnabled = true;
+
+                await CountryVM.Dispatcher.RunAsync(CoreDispatcherPriority.Low,async delegate
+                {
+                    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Low, () =>
+                    {
+                        CountryListView.SelectedIndex = CountryModel.GetCountryModelIndex(CountryName);
+                        CountryListView.ScrollIntoView(CountryListView.SelectedItem);
+                    });
+                });
+            });
         }
 
         /// <summary>
