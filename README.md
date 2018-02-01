@@ -16,7 +16,7 @@ v1.3.0
 
 Sample code :
 
-```
+```csharp
 var countryPickerDialog = new UWP.Class.PickerDialog()
 {
     CountryName = BtnCountryPicker.Content.ToString(),
