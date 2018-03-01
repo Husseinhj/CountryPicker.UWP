@@ -1,4 +1,4 @@
-# CountryPicker.UWP [![Build Status](https://travis-ci.org/Husseinhj/CountryPicker.UWP.svg?branch=master)](https://travis-ci.org/Husseinhj/CountryPicker.UWP) ![Nuget version](https://img.shields.io/nuget/v/CountryPicker.UWP.svg?style=flat) ![downloads](https://img.shields.io/nuget/dt/CountryPicker.UWP.svg?style=flat)
+# CountryPicker.UWP [![Build status](https://ci.appveyor.com/api/projects/status/wfc8naou7rd8hv4l?svg=true)](https://ci.appveyor.com/project/Husseinhj/countrypicker-uwp) ![Nuget version](https://img.shields.io/nuget/v/CountryPicker.UWP.svg?style=flat) ![downloads](https://img.shields.io/nuget/dt/CountryPicker.UWP.svg?style=flat)
 Country picker control for Windows Universal App
 Support target UWP >= 10.0 Build 10240 
 
